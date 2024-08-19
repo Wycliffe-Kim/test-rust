@@ -8,14 +8,26 @@
  * Email: contact@nota.ai
  */
 
-fn main() {
-    let dir = std::env::current_dir().unwrap();
-    tonic_build::configure()
-        .build_server(false)
-        .out_dir(".")
-        .compile(
-            &[format!("{}/src/test.proto", dir.display())],
-            &[format!("{}", dir.display())],
-        )
-        .unwrap();
+syntax = "proto3";
+
+// option java_multiple_files = true;
+// option java_package = "io.grpc.examples.test";
+// option java_outer_classname = "TestProto";
+
+package helloworld;
+
+// The greeting service definition.
+service Greeter {
+  // Sends a greeting
+  rpc SayHello (HelloRequest) returns (HelloReply) {}
+}
+
+// The request message containing the user's name.
+message HelloRequest {
+  string name = 1;
+}
+
+// The response message containing the greetings
+message HelloReply {
+  string message = 1;
 }

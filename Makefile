@@ -7,14 +7,19 @@
 # For inquiries regarding the use of this source code, please contact Nota Inc. at:
 # Email: contact@nota.ai
 #
-[package]
-name = "test-rust"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-tonic = { version = "0.12.1", features = ["tls"] }
-prost = "0.13.1"
-prost-types = "0.13.1"
-tonic-types = "0.12.1"
-tonic-build = "0.12.1"
+run:
+	# curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
+	cargo new d
+	echo "fn main() { \
+			let dir = std::env::current_dir().unwrap();\
+			println!(\"{:?}\", dir);\
+			tonic_build::configure()\
+					.build_server(false)\
+					.out_dir(\".\")\
+					.compile(\
+							&[format!(\"{}/test.proto\", dir.display())],\
+							&[format!(\"{}\", dir.display())],\
+					)\
+					.unwrap();}" > d/src/main.rs
+	cargo r
+	rm -rf d
