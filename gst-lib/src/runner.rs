@@ -10,7 +10,7 @@
 
 use std::{env, path::PathBuf, process::Stdio};
 
-// use gstreamer::prelude::{ElementExt, GstBinExtManual, GstObjectExt};
+use gstreamer::prelude::{ElementExt, GstBinExtManual, GstObjectExt};
 use tokio::{
     io::{AsyncBufReadExt, BufReader},
     process::Command,
@@ -18,16 +18,16 @@ use tokio::{
 
 use crate::{project_root_path, utils::resources_path};
 
-// macro_rules! gst_make {
-//     ($call:expr, $invoker:expr) => {
-//         match $call {
-//             Ok(element) => element,
-//             Err(error) => {
-//                 return Err(format!("[{}] {}", $invoker, error.to_string()));
-//             }
-//         }
-//     };
-// }
+macro_rules! gst_make {
+    ($call:expr, $invoker:expr) => {
+        match $call {
+            Ok(element) => element,
+            Err(error) => {
+                return Err(format!("[{}] {}", $invoker, error.to_string()));
+            }
+        }
+    };
+}
 
 fn gstreamer_binary_path() -> PathBuf {
     PathBuf::from_iter([project_root_path!(), "assets\\gstreamer"])
