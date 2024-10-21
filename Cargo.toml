@@ -13,7 +13,7 @@ version = "0.1.0"
 edition = "2021"
 
 [workspace]
-members = ["gst-process"]
+members = [ "gst-lib","gst-process"]
 
 [dependencies]
 tonic = { version = "0.12.1", features = ["tls"] }
