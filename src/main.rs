@@ -13,7 +13,6 @@ use log::{set_max_level, LevelFilter};
 use once_cell::sync::OnceCell;
 use utils::resources_path;
 
-mod gstreamer_runner;
 mod utils;
 
 fn log_format_with_timestamp(
