@@ -8,14 +8,56 @@
  * Email: contact@nota.ai
  */
 
-fn main() {
-    let dir = std::env::current_dir().unwrap();
-    tonic_build::configure()
-        .build_server(false)
-        .out_dir(".")
-        .compile(
-            &[format!("{}/src/test.proto", dir.display())],
-            &[format!("{}", dir.display())],
-        )
-        .unwrap();
+use flexi_logger::{Cleanup, Criterion, FileSpec, Logger, Naming};
+use log::{set_max_level, LevelFilter};
+use once_cell::sync::OnceCell;
+use utils::resources_path;
+
+mod gstreamer_runner;
+mod utils;
+
+fn log_format_with_timestamp(
+    w: &mut dyn std::io::Write,
+    now: &mut flexi_logger::DeferredNow,
+    record: &log::Record,
+) -> std::io::Result<()> {
+    write!(
+        w,
+        "[{}.{:03}] [{}] - {}",
+        now.format("%Y-%m-%d %H:%M:%S"),
+        now.now().timestamp_subsec_millis(),
+        record.level(),
+        record.args()
+    )
+}
+
+fn init_global_logger() {
+    let resources_dir = resources_path();
+    static LOGGER_INITIALIZED: OnceCell<()> = OnceCell::new();
+
+    LOGGER_INITIALIZED.get_or_init(|| {
+        Logger::try_with_str("info")
+            .unwrap()
+            .log_to_file(
+                FileSpec::default()
+                    .directory(resources_dir)
+                    .basename("logs"),
+            )
+            .duplicate_to_stdout(flexi_logger::Duplicate::All)
+            .rotate(
+                Criterion::Size(100_000_000),
+                Naming::Numbers,
+                Cleanup::KeepLogFiles(3),
+            )
+            .format(log_format_with_timestamp)
+            .start()
+            .expect("Failed to initialize logger");
+
+        set_max_level(LevelFilter::Info);
+    });
+}
+
+#[tokio::main]
+async fn main() {
+    init_global_logger();
 }
