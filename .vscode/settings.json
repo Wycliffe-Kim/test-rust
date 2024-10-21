@@ -1,6 +1,3 @@
 {
-  "rust-analyzer.linkedProjects": [
-    "${workspaceFolder}/Cargo.toml",
-    "${workspaceFolder}/gstreamer-runner/Cargo.toml"
-  ]
+  "rust-analyzer.linkedProjects": ["${workspaceFolder}/Cargo.toml"]
 }
