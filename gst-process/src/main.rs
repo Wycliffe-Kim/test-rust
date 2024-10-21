@@ -13,7 +13,7 @@ use log::{set_max_level, LevelFilter};
 use once_cell::sync::OnceCell;
 use utils::resources_path;
 
-mod gstreamer_runner;
+mod runner;
 mod utils;
 
 fn log_format_with_timestamp(
@@ -60,5 +60,7 @@ fn init_global_logger() {
 #[tokio::main]
 async fn main() {
     init_global_logger();
-    gstreamer_runner::gstreamer_run().await;
+    if let Err(error) = runner::run().await {
+        log::error!("{}", error.to_string());
+    }
 }
