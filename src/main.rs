@@ -11,7 +11,9 @@
 use flexi_logger::{Cleanup, Criterion, FileSpec, Logger, Naming};
 use log::{set_max_level, LevelFilter};
 use once_cell::sync::OnceCell;
+use regex::Regex;
 use utils::resources_path;
+use uuid::Uuid;
 
 mod utils;
 
@@ -59,4 +61,25 @@ fn init_global_logger() {
 #[tokio::main]
 async fn main() {
     init_global_logger();
+
+    let ip = "192.168.45.251";
+    let port = 50000;
+    let uuid = Uuid::new_v4().to_string();
+    let server_id = format!("[SERVER][{ip}][{port}][{uuid}]");
+
+    if let Ok(regex) =
+        Regex::new(r"\[SERVER\]\[(?P<ip>[^\]]+)\]\[(?P<port>\d+)\]\[(?P<uuid>[^\]]+)\]")
+    {
+        if let Some(result) = regex.captures(&server_id) {
+            if let Some(ip) = result.name("ip") {
+                log::info!("{}", ip.as_str());
+            }
+            if let Some(port) = result.name("port") {
+                log::info!("{}", port.as_str());
+            }
+            if let Some(uuid) = result.name("uuid") {
+                log::info!("{}", uuid.as_str());
+            }
+        }
+    }
 }
