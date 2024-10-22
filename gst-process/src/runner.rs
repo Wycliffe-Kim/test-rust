@@ -15,10 +15,10 @@ use tokio::{
     process::Command,
 };
 
-use crate::{project_root_path, utils::resources_path};
+use crate::{gstreamer_root_path, project_root_path, utils::resources_path};
 
 fn gstreamer_binary_path() -> PathBuf {
-    PathBuf::from_iter([project_root_path!(), "assets\\gstreamer"])
+    gstreamer_root_path!("bin")
 }
 
 fn gstreamer_launch_path() -> PathBuf {
@@ -37,7 +37,7 @@ fn gstreamer_lib_path() -> PathBuf {
 
 fn gstreamer_plugin_path() -> PathBuf {
     PathBuf::from(format!(
-        "{}\\libexec",
+        "{}\\libexec\\gstreamer-1.0",
         gstreamer_binary_path().to_string_lossy()
     ))
 }
@@ -69,8 +69,29 @@ fn segment_location() -> String {
     .replace("\\", "\\\\")
 }
 
+fn clear_files(output_dir: &PathBuf) -> std::io::Result<()> {
+    for entry in std::fs::read_dir(output_dir)? {
+        let entry = entry?;
+        let path = entry.path();
+
+        if path.is_file() {
+            if let Some(ext) = path.extension() {
+                if ext == "ts" || ext == "m3u8" {
+                    std::fs::remove_file(path.clone())?;
+                }
+            }
+        }
+    }
+
+    Ok(())
+}
+
 pub async fn run() -> Result<(), String> {
     log::info!("project_root_path: {}", project_root_path!());
+
+    if let Err(error) = clear_files(&resources_path()) {
+        log::error!("{}", error.to_string());
+    }
 
     let gstreamer_binary_path = gstreamer_binary_path();
     let gstreamer_launch_path = gstreamer_launch_path();

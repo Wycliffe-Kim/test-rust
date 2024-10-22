@@ -16,12 +16,73 @@ use std::{
 #[macro_export]
 macro_rules! project_root_path {
     () => {
-        std::env!("CARGO_MANIFEST_DIR")
+        std::env::var("CARGO_MANIFEST_DIR").unwrap_or(String::new())
+    };
+}
+
+#[macro_export]
+macro_rules! gstreamer_root_path {
+    ($path:expr) => {
+        if cfg!(debug_assertions) {
+            if cfg!(target_os = "windows") {
+                std::path::PathBuf::from(format!(
+                    "{}{}",
+                    std::env::var("GSTREAMER_1_0_ROOT_MSVC_X86_64").unwrap_or(String::new()),
+                    String::from($path)
+                ))
+            } else if cfg!(target_os = "macos") {
+                std::path::PathBuf::from(format!(
+                    "/Library/Frameworks/Gstreamer.framework/Versions/Current/{}",
+                    String::from($path)
+                ))
+            } else {
+                std::path::PathBuf::default()
+            }
+        } else {
+            std::path::PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").unwrap_or(String::new()))
+        }
+    };
+
+    ($windows:expr, $macos:expr) => {
+        if cfg!(debug_assertions) {
+            if cfg!(target_os = "windows") {
+                std::path::PathBuf::from(format!(
+                    "{}{}",
+                    std::env::var("GSTREAMER_1_0_ROOT_MSVC_X86_64").unwrap_or(String::new()),
+                    String::from($windows)
+                ))
+            } else if cfg!(target_os = "macos") {
+                std::path::PathBuf::from(format!(
+                    "/Library/Frameworks/Gstreamer.framework/Versions/Current/{}",
+                    String::from($macos)
+                ))
+            } else {
+                std::path::PathBuf::default()
+            }
+        } else {
+            if cfg!(target_os = "windows") {
+                std::path::PathBuf::from(format!(
+                    "{}{}",
+                    std::env::var("CARGO_MANIFEST_DIR").unwrap_or(String::new()),
+                    String::from($windows)
+                ))
+            } else if cfg!(target_os = "macos") {
+                std::path::PathBuf::from(format!(
+                    "{}{}",
+                    std::env::var("CARGO_MANIFEST_DIR").unwrap_or(String::new()),
+                    String::from($macos)
+                ))
+            } else {
+                std::path::PathBuf::from(
+                    std::env::var("CARGO_MANIFEST_DIR").unwrap_or(String::new()),
+                )
+            }
+        }
     };
 }
 
 pub fn resources_path() -> PathBuf {
-    let resources_path = PathBuf::from_iter([project_root_path!(), "resources"]);
+    let resources_path = PathBuf::from_iter([project_root_path!(), String::from("resources")]);
     if let Ok(result) = exists(resources_path.clone()) {
         if !result {
             if let Err(error) = create_dir_all(resources_path.clone()) {
