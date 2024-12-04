@@ -1,7 +1,3 @@
 {
-  "rust-analyzer.linkedProjects": [
-    "${workspaceFolder}/Cargo.toml",
-    "${workspaceFolder}/gst-process/Cargo.toml",
-    "${workspaceFolder}/gst-lib/Cargo.toml"
-  ]
+  "rust-analyzer.linkedProjects": ["${workspaceFolder}/Cargo.toml"]
 }
