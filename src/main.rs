@@ -8,6 +8,8 @@
  * Email: contact@nota.ai
  */
 
+use std::collections::HashMap;
+
 use flexi_logger::{Cleanup, Criterion, FileSpec, Logger, Naming};
 use log::{set_max_level, LevelFilter};
 use once_cell::sync::OnceCell;
@@ -56,7 +58,27 @@ fn init_global_logger() {
     });
 }
 
+#[derive(Debug, Clone)]
+struct TestData {
+    a: i32,
+    b: String,
+}
+
 #[tokio::main]
 async fn main() {
     init_global_logger();
+
+    let test_data = vec![
+        TestData {
+            a: 1,
+            b: "2".to_string(),
+        },
+        TestData {
+            a: 3,
+            b: "4".to_string(),
+        },
+    ];
+
+    let map: HashMap<i32, String> = test_data.iter().map(|d| (d.a, d.b.clone())).collect();
+    log::info!("{:#?}", map);
 }
