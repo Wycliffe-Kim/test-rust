@@ -8,10 +8,7 @@
  * Email: contact@nota.ai
  */
 
-use std::{
-    fs::{create_dir_all, exists},
-    path::PathBuf,
-};
+use std::{fs::create_dir_all, path::PathBuf};
 
 #[macro_export]
 macro_rules! project_root_path {
@@ -22,11 +19,9 @@ macro_rules! project_root_path {
 
 pub fn resources_path() -> PathBuf {
     let resources_path = PathBuf::from_iter([project_root_path!(), "resources"]);
-    if let Ok(result) = exists(resources_path.clone()) {
-        if !result {
-            if let Err(error) = create_dir_all(resources_path.clone()) {
-                log::error!("{}", error.to_string());
-            }
+    if !resources_path.exists() {
+        if let Err(error) = create_dir_all(resources_path.clone()) {
+            log::error!("{}", error.to_string());
         }
     }
     resources_path
