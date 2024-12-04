@@ -11,9 +11,7 @@
 use flexi_logger::{Cleanup, Criterion, FileSpec, Logger, Naming};
 use log::{set_max_level, LevelFilter};
 use once_cell::sync::OnceCell;
-use regex::Regex;
 use utils::resources_path;
-use uuid::Uuid;
 
 mod utils;
 
