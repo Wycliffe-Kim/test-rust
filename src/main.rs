@@ -8,6 +8,8 @@
  * Email: contact@nota.ai
  */
 
+use std::path::PathBuf;
+
 use flexi_logger::{Cleanup, Criterion, FileSpec, Logger, Naming};
 use log::{set_max_level, LevelFilter};
 use once_cell::sync::OnceCell;
@@ -59,4 +61,15 @@ fn init_global_logger() {
 #[tokio::main]
 async fn main() {
     init_global_logger();
+
+    let path = PathBuf::default()
+        .join("test")
+        .join("hls")
+        .join("123asfqwwezxczxcqmweqweidls;ald")
+        .join("test.m3u8");
+    let components = path.components().collect::<Vec<_>>();
+    if components.len() >= 2 {
+        let session = &components[components.len() - 2];
+        log::info!("{:#?}", session.as_os_str().to_string_lossy().to_string());
+    }
 }
